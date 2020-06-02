@@ -16,4 +16,19 @@ router.get("/", (req, res) => {
         });
 });
 
+router.post("/", (req, res) => {
+    const item = req.body;
+    if (!item.title || !item.contents) {
+        res.status(400).json({
+            errorMessage: "Please provide title and contents for the post.",
+        });
+    } else if (item.title && item.contents) {
+        item.id = Date.now();
+        res.status(201).json(item);
+    } else
+        res.status(500).json({
+            error: "There was an error while saving the post to the database",
+        });
+});
+
 module.exports = router;
