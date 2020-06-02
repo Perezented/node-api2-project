@@ -42,6 +42,7 @@ router.post("/", (req, res) => {
         });
     } else if (post.title && post.contents) {
         post.id = Date.now();
+        Posts.insert(post);
         res.status(201).json(post);
     } else
         res.status(500).json({
@@ -109,7 +110,9 @@ router.put("/:id", (req, res) => {
     updatedPost.id = id;
     Posts.findById(id).then((post) => {
         if (post.length === 0) {
-            res.status(404).json({ error: "not found" });
+            res.status(404).json({
+                message: "The post with the specified ID does not exist.",
+            });
         } else if (!updatedPost.title || !updatedPost.contents) {
             res.status(400).json({
                 errorMessage: "Please provide title and contents for the post.",
