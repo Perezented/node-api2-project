@@ -8,6 +8,9 @@ server.get("/", (req, res) => {
     });
 });
 
+const postsRouter = require("./posts/posts");
+server.use("/api/posts", postsRouter);
+
 server.listen(9000, () => {
     console.log("\n*** server is listening on port 9000 ***\n");
 });
