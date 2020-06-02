@@ -110,13 +110,17 @@ router.put("/:id", (req, res) => {
     Posts.findById(id).then((post) => {
         if (post.length === 0) {
             res.status(404).json({ error: "not found" });
-        }
+        } else if (!updatedPost.title || !updatedPost.contents) {
+            res.status(400).json({
+                errorMessage: "Please provide title and contents for the post.",
+            });
+        } else if (updatedPost.title && updatedPost.contents) {
+            res.status(200).json(updatedPost);
+        } else
+            res.status(500).json({
+                error: "The post information could not be modified.",
+            });
     });
-    if (!updatedPost.title || !updatedPost.contents) {
-        res.status(400).json({
-            errorMessage: "Please provide title and contents for the post.",
-        });
-    }
     // Posts.update(id, )
 });
 
