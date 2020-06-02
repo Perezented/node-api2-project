@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Posts = require("../data/db");
+const Comments = require("../data/db");
 
 router.get("/", (req, res) => {
     Posts.find(req.query)
@@ -48,6 +49,21 @@ router.post("/", (req, res) => {
         });
 });
 
+router.get("/:id/comments", (req, res) => {
+    const id = req.params.id;
+    Posts.findById(id).then((post) => {
+        if (post.length > 0) {
+            res.status(200).json({ Comments });
+        } else if (post.length === 0) {
+            res.status(404).json({
+                message: "The post with the specified ID does not exists.",
+            });
+        } else
+            return res.status(500).json({
+                error: "The comments information could not be retrieved.",
+            });
+    });
+});
 router.post("/:id/comments", (req, res) => {
     const id = req.params.id;
 
