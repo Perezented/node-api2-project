@@ -103,4 +103,21 @@ router.delete("/:id", (req, res) => {
     });
 });
 
+router.put("/:id", (req, res) => {
+    const id = req.params.id;
+    const updatedPost = req.body;
+    updatedPost.id = id;
+    Posts.findById(id).then((post) => {
+        if (post.length === 0) {
+            res.status(404).json({ error: "not found" });
+        }
+    });
+    if (!updatedPost.title || !updatedPost.contents) {
+        res.status(400).json({
+            errorMessage: "Please provide title and contents for the post.",
+        });
+    }
+    // Posts.update(id, )
+});
+
 module.exports = router;
