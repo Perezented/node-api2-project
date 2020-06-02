@@ -31,4 +31,18 @@ router.post("/", (req, res) => {
         });
 });
 
+router.post("/:id/comments", (req, res) => {
+    const id = req.params.id;
+
+    const item = req.body;
+    item.post_id = id;
+    Posts.findById(id).then((post) => {
+        if (post.length > 0) {
+            res.status(200).json(post);
+        } else if (post.length === 0) {
+            res.status(404).json({ message: "notFound" });
+        }
+    });
+});
+
 module.exports = router;
