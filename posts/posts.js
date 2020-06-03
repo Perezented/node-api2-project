@@ -54,7 +54,7 @@ router.get("/:id/comments", (req, res) => {
     const id = req.params.id;
     Posts.findById(id).then((post) => {
         if (post.length > 0) {
-            res.status(200).json({ Comments });
+            res.status(200).json({ post });
         } else if (post.length === 0) {
             res.status(404).json({
                 message: "The post with the specified ID does not exists.",
@@ -66,29 +66,57 @@ router.get("/:id/comments", (req, res) => {
     });
 });
 router.post("/:id/comments", (req, res) => {
-    const id = req.params.id;
+    const postId = req.params.id;
 
-    const comment = req.body;
-    comment.post_id = id;
-    Posts.findById(id).then((post) => {
-        if (post.length > 0) {
-            if (!comment.text) {
-                res.status(400).json({
-                    errorMessage: "Please provide text for the comment.",
+    if (!req.body.text) {
+        res.status(404).json({ message: "Please provide text" });
+    } else {
+        Posts.insertComment({ post_id: postId, ...req.body })
+            .then((comment) => {
+                if (comment === 0) {
+                    res.status(404).json({
+                        message: "Could not find the post",
+                    });
+                } else {
+                    res.status(201).json({
+                        id: comment.id,
+                        post_id: postId,
+                        ...req.body,
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    error: "Could not accomplish",
                 });
-            } else {
-                Comments.insertComment(id, comment);
-                res.status(201).json({ comment });
-            }
-        } else if (post.length === 0) {
-            res.status(404).json({
-                message: "The post with the specified ID does not exist.",
             });
-        } else
-            res.status(500).json({
-                error: "The posts information could not be retrieved.",
-            });
-    });
+    }
+
+    // const comment = req.body;
+    // comment.post_id = id;
+    // Posts.findById(id).then((post) => {
+    //     if (post.length > 0) {
+    //         if (!comment.text) {
+    //             res.status(400).json({
+    //                 errorMessage: "Please provide text for the comment.",
+    //             });
+    //         } else {
+    //             Comments.insertComment(comment).then((item) => {
+    //                 console.log(item);
+    //                 res.status(200).json({ item });
+    //             });
+    //             // res.status(201).json({ comment });
+    //         }
+    //     } else if (post.length === 0) {
+    //         res.status(404).json({
+    //             message: "The post with the specified ID does not exist.",
+    //         });
+    //     } else
+    //         res.status(500).json({
+    //             error: "The posts information could not be retrieved.",
+    //         });
+    // });
 });
 
 router.delete("/:id", (req, res) => {
